@@ -6,7 +6,7 @@ description = "Webview raw ffi bindings"
 repository = "https://github.com/MoAlyousef/wv-sys"
 documentation = "https://docs.rs/wv-sys"
 categories = ["gui"]
-readme = "../README.md"
+readme = "README.md"
 license = "MIT"
 
 [build-dependencies]
