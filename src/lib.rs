@@ -9,6 +9,7 @@ use std::{
     ffi::{CStr, CString},
     mem,
     os::raw,
+    ptr,
     sync::Arc,
 };
 
@@ -42,9 +43,15 @@ impl Drop for Webview {
 }
 
 impl Webview {
+    /// Create a new instance of the webview
+    pub fn create_no_win(debug: bool) -> Webview {
+        Webview {
+            inner: Arc::new(unsafe { webview_create(debug as raw::c_int, ptr::null_mut()) }),
+        }
+    }
     /// Navigate to a url
     pub fn navigate(&self, url: &str) {
-        let url = std::ffi::CString::new(url).unwrap();
+        let url = CString::new(url).unwrap();
         unsafe {
             webview_navigate(*self.inner, url.as_ptr() as _);
         }
@@ -144,6 +151,22 @@ impl Webview {
     /// Set the size of the webview window
     pub fn set_size(&self, width: i32, height: i32, hints: SizeHint) {
         unsafe { webview_set_size(*self.inner, width, height, hints as i32) }
+    }
+
+    /// Set the title
+    pub fn set_title(&mut self, title: &str) {
+        let title = CString::new(title).unwrap();
+        unsafe { webview_set_title(*self.inner, title.as_ptr()) }
+    }
+
+    /// Run the webview
+    pub fn run(&mut self) {
+        unsafe { webview_run(*self.inner) }
+    }
+
+    /// Get the webview's window
+    pub fn get_window(&self) -> *mut raw::c_void {
+        unsafe { webview_get_window(*self.inner) as *mut _ }
     }
 
     /// Create a Webview from an `Arc<webview_t>`
