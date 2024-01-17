@@ -2,4 +2,4 @@
 
 Rust bindings for webview.h.
 
-A maintained fork of https://github.com/webview/webview_rust/tree/dev/webview-official-sys.
+A maintained fork of https://github.com/webview/webview_rust.
