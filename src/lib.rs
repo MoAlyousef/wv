@@ -171,8 +171,6 @@ impl Webview {
 
     /// Create a Webview from an `Arc<webview_t>`
     pub fn from_raw(inner: Arc<webview_t>) -> Webview {
-        Self {
-            inner
-        }
+        Self { inner }
     }
 }

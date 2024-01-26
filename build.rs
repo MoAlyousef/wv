@@ -11,33 +11,24 @@ fn main() {
     println!("cargo:rerun-if-changed=webview/webview.cc");
 
     let mut build = cc::Build::new();
-    if !target.contains("windows-gnu") {
-        build
-            .cpp(true)
-            .define("WEBVIEW_STATIC", "")
-            .file("webview/webview.cc")
-            .flag_if_supported("-w");
-    }
+    build
+        .cpp(true)
+        .define("WEBVIEW_STATIC", "")
+        .file("webview/webview.cc")
+        .flag_if_supported("-w");
 
     if target.contains("windows") {
-        let edge_weview_native =
-            "webview/build/native".to_string();
+        let edge_weview_native = "webview/build/native".to_string();
+        let mut include = edge_weview_native.clone();
+        build.include(format!("{}/include", include));
         if target.contains("msvc") {
-            let mut include = edge_weview_native.clone();
             include.push_str("/include");
             build.flag("/DWEBVIEW_EDGE");
             build.flag("/std:c++17");
-            build.include(include);
         }
 
         for &lib in &[
-            "user32",
-            "oleaut32",
-            "ole32",
-            "version",
-            "shell32",
-			"advapi32",
-			"shlwapi"
+            "user32", "oleaut32", "ole32", "version", "shell32", "advapi32", "shlwapi",
         ] {
             println!("cargo:rustc-link-lib={}", lib);
         }
@@ -61,7 +52,10 @@ fn main() {
         wv_path.push(wv_arch);
         let webview2_dir = wv_path.as_path().to_str().unwrap();
         println!("cargo:rustc-link-search={}", webview2_dir);
-        println!("cargo:rustc-link-search={}", out_dir.join("../../..").display());
+        println!(
+            "cargo:rustc-link-search={}",
+            out_dir.join("../../..").display()
+        );
         if target.contains("msvc") {
             println!("cargo:rustc-link-lib=WebView2LoaderStatic");
         } else {
@@ -112,7 +106,5 @@ fn main() {
         panic!("Unsupported platform");
     }
 
-    if !target.contains("windows-gnu") {
-        build.compile("webview");
-    }
+    build.compile("webview");
 }
