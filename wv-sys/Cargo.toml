@@ -1,13 +1,14 @@
 [package]
-name = "wv"
-version = "0.1.0"
+name = "wv-sys"
+version = "0.1.2"
 edition = "2021"
 description = "Webview raw ffi bindings"
 repository = "https://github.com/MoAlyousef/wv"
-documentation = "https://docs.rs/wv"
+documentation = "https://docs.rs/wv-sys"
 categories = ["gui"]
 readme = "README.md"
 license = "MIT"
 
-[dependencies]
-wv-sys = { version = "0.1.2", path = "wv-sys" }
+[build-dependencies]
+pkg-config = "0.3"
+cc = "1"

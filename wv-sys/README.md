@@ -1,4 +1,4 @@
-# wv
+# wv-sys
 
 Rust bindings for webview.h.
 

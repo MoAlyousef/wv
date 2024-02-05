@@ -2,8 +2,7 @@
 
 // Uses code from https://github.com/webview/webview_rust/blob/dev/src/webview.rs
 
-mod sys;
-pub use sys::*;
+use wv_sys::*;
 
 use std::{
     ffi::{CStr, CString},

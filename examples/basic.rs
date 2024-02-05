@@ -1,4 +1,4 @@
-use wv_sys::*;
+use wv::*;
 
 fn main() {
     let mut wv = Webview::create_no_win(false);
