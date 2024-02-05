@@ -10,4 +10,4 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-wv-sys = { version = "0.1.2", path = "wv-sys" }
+wv-sys = { version = "0.1.3", path = "wv-sys" }
