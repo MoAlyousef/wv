@@ -1,0 +1,3 @@
+[submodule "wv-sys/webview"]
+	path = wv-sys/webview
+	url = https://github.com/webview/webview

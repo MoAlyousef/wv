@@ -1,6 +1,6 @@
 [package]
 name = "wv-sys"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "Webview raw ffi bindings"
 repository = "https://github.com/MoAlyousef/wv"
@@ -11,4 +11,4 @@ license = "MIT"
 
 [build-dependencies]
 pkg-config = "0.3"
-cc = "1"
+cmake = "0.1"

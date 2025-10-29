@@ -1,1 +1,1 @@
-bindgen --no-layout-tests webview/webview.h -o src/lib.rs -- -DWEBVIEW_HEADER
+bindgen --no-layout-tests wv-sys/webview/core/include/webview/api.h -o wv-sys/src/sys.rs -- -DWEBVIEW_HEADER

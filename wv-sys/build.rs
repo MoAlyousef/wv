@@ -1,3 +1,4 @@
+use cmake::Config;
 use std::env;
 use std::path::PathBuf;
 
@@ -7,25 +8,18 @@ fn main() {
     let out_dir = PathBuf::from(std::env::var("OUT_DIR").unwrap());
     let exe_pth = out_dir.clone();
 
-    println!("cargo:rerun-if-changed=webview/webview.h");
-    println!("cargo:rerun-if-changed=webview/webview.cc");
+    println!("cargo:rerun-if-changed=webview");
+    println!("cargo:rerun-if-changed=libs");
 
-    let mut build = cc::Build::new();
-    build
-        .cpp(true)
-        .define("WEBVIEW_STATIC", "")
-        .file("webview/webview.cc")
-        .flag_if_supported("-w");
+    let mut dst = Config::new("webview");
 
     if target.contains("windows") {
-        let edge_weview_native = "webview/build/native".to_string();
-        let mut include = edge_weview_native.clone();
-        build.include(format!("{}/include", include));
-        if target.contains("msvc") {
-            include.push_str("/include");
-            build.flag("/DWEBVIEW_EDGE");
-            build.flag("/std:c++17");
-        }
+        let edge_weview_native = "libs".to_string();
+        let include = edge_weview_native.clone();
+        dst.define(
+            "CMAKE_C_STANDARD_INCLUDE_DIRECTORIES=",
+            format!("{}/include", include),
+        );
 
         for &lib in &[
             "user32", "oleaut32", "ole32", "version", "shell32", "advapi32", "shlwapi",
@@ -44,10 +38,6 @@ fn main() {
         let mut wv_path = manifest_dir;
         if target.contains("msvc") {
             wv_path.push(edge_weview_native);
-        } else {
-            wv_path.push("webview");
-            wv_path.push("build");
-            wv_path.push("native");
         }
         wv_path.push(wv_arch);
         let webview2_dir = wv_path.as_path().to_str().unwrap();
@@ -88,23 +78,36 @@ fn main() {
             }
         }
     } else if target.contains("apple") {
-        build.flag("-DWEBVIEW_COCOA");
-        build.flag("-std=c++11");
         println!("cargo:rustc-link-lib=framework=Cocoa");
         println!("cargo:rustc-link-lib=framework=WebKit");
     } else if target.contains("linux") || target.contains("bsd") {
-        build.flag("-DWEBVIEW_GTK");
-        build.flag("-std=c++11");
+        dst.define("WEBVIEW_WEBKITGTK_API", "4.1");
         let lib = pkg_config::Config::new()
             .atleast_version("2.8")
             .probe("webkit2gtk-4.1")
             .unwrap();
-        for path in lib.include_paths {
-            build.include(path);
+        for path in lib.libs {
+            println!("cargo:rustc-link-lib={}", path);
         }
     } else {
         panic!("Unsupported platform");
     }
 
-    build.compile("webview");
+    let dst = dst
+        .profile("Release")
+        .define("WEBVIEW_BUILD_DOCS", "OFF")
+        .define("WEBVIEW_BUILD_EXAMPLES", "OFF")
+        .define("WEBVIEW_BUILD_DOCS", "OFF")
+        .define("WEBVIEW_BUILD_STATIC_LIBRARY", "ON")
+        .define("WEBVIEW_BUILD_AMALGAMATION", "OFF")
+        .define("WEBVIEW_BUILD_DOCS", "OFF")
+        .define("WEBVIEW_BUILD_TESTS", "OFF")
+        .define("WEBVIEW_BUILD", "ON")
+        .build();
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join("lib").display()
+    );
+    println!("cargo:rustc-link-lib=static=webview");
+    println!("cargo:rustc-link-lib=stdc++");
 }
