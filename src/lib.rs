@@ -2,7 +2,7 @@
 
 // Uses code from https://github.com/webview/webview_rust/blob/dev/src/webview.rs
 
-use wv_sys::*;
+pub use wv_sys::*;
 
 use std::{
     ffi::{CStr, CString},
@@ -286,7 +286,7 @@ impl Webview {
 
     /// Get the webview's window
     pub fn get_window(&self) -> *mut raw::c_void {
-        unsafe { webview_get_window(*self.inner) as *mut _ }
+        unsafe { webview_get_window(*self.inner) }
     }
 
     /// Create a Webview from an `Arc<webview_t>`
