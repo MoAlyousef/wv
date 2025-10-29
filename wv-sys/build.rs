@@ -109,9 +109,9 @@ fn main() {
         dst.join("lib").display()
     );
     println!("cargo:rustc-link-lib=static=webview");
-    if target_triple.contains("gnu") || target_triple.contains("musl") {
+    if target.contains("gnu") || target.contains("musl") {
         println!("cargo:rustc-link-lib=stdc++");
-    } else if target_triple.contains("apple") {
+    } else if target.contains("apple") {
         println!("cargo:rustc-link-lib=c++");
     }
 }
