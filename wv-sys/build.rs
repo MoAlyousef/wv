@@ -100,6 +100,7 @@ fn main() {
         .define("WEBVIEW_BUILD_DOCS", "OFF")
         .define("WEBVIEW_BUILD_STATIC_LIBRARY", "ON")
         .define("WEBVIEW_BUILD_AMALGAMATION", "OFF")
+        .define("WEBVIEW_IS_CI", "OFF")
         .define("WEBVIEW_BUILD_DOCS", "OFF")
         .define("WEBVIEW_BUILD_TESTS", "OFF")
         .define("WEBVIEW_BUILD", "ON")
