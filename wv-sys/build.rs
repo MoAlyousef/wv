@@ -36,9 +36,9 @@ fn main() {
         };
 
         let mut wv_path = manifest_dir;
-        if target.contains("msvc") {
-            wv_path.push(edge_weview_native);
-        }
+
+        wv_path.push(edge_weview_native);
+
         wv_path.push(wv_arch);
         let webview2_dir = wv_path.as_path().to_str().unwrap();
         println!("cargo:rustc-link-search={}", webview2_dir);
