@@ -6,8 +6,7 @@ use wv_sys::*;
 
 use std::{
     ffi::{CStr, CString},
-    io, fmt,
-    string::FromUtf8Error,
+    fmt,
     mem,
     os::raw,
     ptr,
@@ -18,18 +17,10 @@ use std::{
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum WvError {
-    /// i/o error
-    IoError(io::Error),
-    /// Utf-8 conversion error
-    Utf8Error(FromUtf8Error),
     /// Null string conversion error
     NullError(std::ffi::NulError),
     /// Internal fltk error
     Internal(WvErrorKind),
-    /// Error using an erroneous env variable
-    EnvVarError(std::env::VarError),
-    /// Parsing error
-    ParseIntError(std::num::ParseIntError),
     /// Unknown error
     Unknown(String),
 }
@@ -44,24 +35,23 @@ unsafe impl Sync for WvError {}
 pub enum WvErrorKind {
     /// Missing dependency
     MissingDependency = -5,
-    /// Failed to initialize the multithreading
+    /// Operation cancelled by the user
     OperationCancelled = -4,
-    /// Failed to set the general scheme of the application
+    /// Invalid state error
     InvalidState = -3,
-    /// Failed operation, mostly unknown reason!
+    /// Invalid argument error
     InvalidArgument = -2,
-    /// System resource (file, image) not found
+    /// Unspecified error
     Unspecified = -1,
-    /// Image format error when opening an image of an unsupported format
-    Duplicate = 1,
-    /// Error filling table
+    /// Duplicate entry error
+    DuplicateEntry = 1,
+    /// Not found error
     NotFound = 2,
 }
 
 impl std::error::Error for WvError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            WvError::IoError(err) => Some(err),
             WvError::NullError(err) => Some(err),
             _ => None,
         }
@@ -71,24 +61,10 @@ impl std::error::Error for WvError {
 impl fmt::Display for WvError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            WvError::IoError(ref err) => err.fmt(f),
             WvError::NullError(ref err) => err.fmt(f),
             WvError::Internal(ref err) => write!(f, "An internal error occurred {:?}", err),
-            WvError::EnvVarError(ref err) => write!(f, "An env var error occurred {:?}", err),
-            WvError::Utf8Error(ref err) => {
-                write!(f, "A UTF8 conversion error occurred {:?}", err)
-            }
-            WvError::ParseIntError(ref err) => {
-                write!(f, "An int parsing error occurred {:?}", err)
-            }
             WvError::Unknown(ref err) => write!(f, "An unknown error occurred {:?}", err),
         }
-    }
-}
-
-impl From<io::Error> for WvError {
-    fn from(err: io::Error) -> WvError {
-        WvError::IoError(err)
     }
 }
 
@@ -98,23 +74,6 @@ impl From<std::ffi::NulError> for WvError {
     }
 }
 
-impl From<std::env::VarError> for WvError {
-    fn from(err: std::env::VarError) -> WvError {
-        WvError::EnvVarError(err)
-    }
-}
-
-impl From<std::string::FromUtf8Error> for WvError {
-    fn from(err: std::string::FromUtf8Error) -> WvError {
-        WvError::Utf8Error(err)
-    }
-}
-
-impl From<std::num::ParseIntError> for WvError {
-    fn from(err: std::num::ParseIntError) -> WvError {
-        WvError::ParseIntError(err)
-    }
-}
 
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
