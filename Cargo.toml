@@ -1,6 +1,6 @@
 [package]
 name = "wv"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 description = "Webview raw ffi bindings"
 repository = "https://github.com/MoAlyousef/wv"
@@ -10,4 +10,4 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-wv-sys = { version = "0.2.0", path = "wv-sys" }
+wv-sys = { version = "0.2.1", path = "wv-sys" }

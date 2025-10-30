@@ -51,7 +51,6 @@ fn main() {
         } else {
             if !target.contains("aarch64") {
                 println!("cargo:rustc-link-lib=WebView2Loader");
-                println!("cargo:rustc-link-lib=webview");
                 for entry in std::fs::read_dir(wv_path).expect("Can't read DLL dir") {
                     let entry_path = entry.expect("Invalid fs entry").path();
                     let file_name_result = entry_path.file_name();
@@ -99,17 +98,23 @@ fn main() {
         .define("WEBVIEW_BUILD_EXAMPLES", "OFF")
         .define("WEBVIEW_BUILD_DOCS", "OFF")
         .define("WEBVIEW_BUILD_STATIC_LIBRARY", "ON")
+        .define("WEBVIEW_BUILD_SHARED_LIBRARY", "OFF")
         .define("WEBVIEW_BUILD_AMALGAMATION", "OFF")
         .define("WEBVIEW_IS_CI", "OFF")
         .define("WEBVIEW_BUILD_DOCS", "OFF")
         .define("WEBVIEW_BUILD_TESTS", "OFF")
         .define("WEBVIEW_BUILD", "ON")
+        .define("WEBVIEW_INSTALL", "ON")
         .build();
     println!(
         "cargo:rustc-link-search=native={}",
         dst.join("lib").display()
     );
-    println!("cargo:rustc-link-lib=static=webview");
+    if target.contains("msvc") {
+        println!("cargo:rustc-link-lib=static=webview_static");
+    } else {
+        println!("cargo:rustc-link-lib=static=webview");
+    }
     if target.contains("gnu") || target.contains("musl") {
         println!("cargo:rustc-link-lib=stdc++");
     } else if target.contains("apple") {
